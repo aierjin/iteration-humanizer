@@ -4,6 +4,27 @@ A Codex skill for revising academic prose with live writing examples and checkin
 
 **AI detectors can misclassify human writing and miss AI-generated text.** Before using the final draft, review it yourself and cross-check with [Turnitin](https://guides.turnitin.com/hc/en-us/articles/28457596598925-How-to-access-the-AI-Writing-Report), if you have authorized access, or another appropriate tool. Follow applicable AI-use and disclosure rules.
 
+## Install in Codex
+
+Requirements: Git, PowerShell 7 (`pwsh`), detector API credentials, and network access to the detector endpoints. Live retrieval also requires browser or web search access.
+
+### Windows PowerShell
+
+```powershell
+$skillsDir = Join-Path $env:USERPROFILE '.agents/skills'
+New-Item -ItemType Directory -Force -Path $skillsDir | Out-Null
+git clone https://github.com/aierjin/iteration-humanizer.git (Join-Path $skillsDir 'iteration-humanizer')
+```
+
+### macOS or Linux
+
+```sh
+mkdir -p ~/.agents/skills
+git clone https://github.com/aierjin/iteration-humanizer.git ~/.agents/skills/iteration-humanizer
+```
+
+Set `ZEROGPT_API_KEY` and `GPTZERO_API_KEY` in the environment that starts Codex. Obtain credentials from the [ZeroGPT Business API](https://api.zerogpt.com/docs) and [GPTZero API](https://docs.gptzero.me/quickstart/). Keep keys out of prompts and commits. Scoring transmits the selected text to the respective providers and may incur charges. Restart Codex if the skill does not appear.
+
 ## What it does
 
 | Input | How it revises | What it scores |
@@ -47,27 +68,6 @@ If Google Scholar requires supported browser access, the skill asks for it. When
 
 Codex manages the search and revision loop within the active session. The PowerShell script measures one file per call.
 
-## Install in Codex
-
-Requirements: Git, PowerShell 7 (`pwsh`), detector API credentials, and network access to the detector endpoints. Live retrieval also requires browser or web search access.
-
-### Windows PowerShell
-
-```powershell
-$skillsDir = Join-Path $env:USERPROFILE '.agents/skills'
-New-Item -ItemType Directory -Force -Path $skillsDir | Out-Null
-git clone https://github.com/aierjin/iteration-humanizer.git (Join-Path $skillsDir 'iteration-humanizer')
-```
-
-### macOS or Linux
-
-```sh
-mkdir -p ~/.agents/skills
-git clone https://github.com/aierjin/iteration-humanizer.git ~/.agents/skills/iteration-humanizer
-```
-
-Set `ZEROGPT_API_KEY` and `GPTZERO_API_KEY` in the environment that starts Codex. Obtain credentials from the [ZeroGPT Business API](https://api.zerogpt.com/docs) and [GPTZero API](https://docs.gptzero.me/quickstart/). Keep keys out of prompts and commits. Scoring transmits the selected text to the respective providers and may incur charges. Restart Codex if the skill does not appear.
-
 ## Quick start
 
 **One sentence**
@@ -94,3 +94,19 @@ Set `ZEROGPT_API_KEY` and `GPTZERO_API_KEY` in the environment that starts Codex
 | Test status | The API client was tested with simulated responses. Live dual-provider operation remains unverified. |
 
 Before submitting or publishing the final draft, independently check its facts and citations and use an authorized secondary review tool if appropriate. Detector scores do not establish authorship.
+
+## Worked example
+
+This example revises an abstract comparing how Hong Kong and Hollywood films frame villains. The excerpts show how the revision made the unit of analysis and the two weighting rules explicit.
+
+**Before**
+
+> The five-pair comparison summarizes valid submitted annotation rows within each film and then gives each film equal weight.
+
+**After**
+
+> For each title we summarized the valid entries. The mean of the five film values for normalized distance from the frame center was 0.2155 on the Hong Kong side and 0.2416 on the Hollywood side.
+
+The revised abstract then reports the middle-ground and low-angle results. It explains that the second comparison used three complete pairs and weighted the sampling windows equally. The middle-ground and low-angle differences kept the same direction, while the occlusion difference reversed. The revision makes clear that the second comparison changes both the included films and the weighting.
+
+For the **full abstract**, the ZeroGPT website returned 100% on the original and 0% on the final version, which was tested twice. These readings apply to the full drafts. GPTZero was not run for this example, so it illustrates a single-detector revision session and has no dual-provider verification result.
