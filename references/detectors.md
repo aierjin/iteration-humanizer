@@ -1,19 +1,16 @@
-# Detector rules
+# Website detector rules
 
-Run `pwsh -NoProfile -File scripts/score.ps1 -Path <utf8-file> -Target <threshold> -Detector ZeroGPT` or use `-Detector GPTZero`. The script returns one measured result or a structured failure. If the user names a different detector, explain what is available and ask how they want to proceed when it cannot be used. Do not claim support for an unimplemented API.
+Use [ZeroGPT](https://www.zerogpt.com/) and [GPTZero](https://gptzero.me/). Read the visible page state before interacting. Paste only the selected candidate into the detector, submit it, and wait for the new result. Verify that the result corresponds to that complete candidate before recording it. If the site asks for sign-in or a CAPTCHA, request user handoff as needed. If browser tools are unavailable, ask the user to paste the candidate and return the result or a screenshot. No API key is needed for this workflow.
 
 ## Metrics and final verification
 
-- ZeroGPT uses its reported fakePercentage.
-- GPTZero uses 100 × (1 − class_probabilities.human). This is a document classification probability including mixed text. It is a different metric from ZeroGPT's estimated share of flagged text. Report the two separately.
-- The first time a full candidate meets the working detector's threshold, measure the exact same full text with the other required detector. An earlier valid score may be reused only for the identical full text and provider. Continue if either score is at or above the threshold. Use the failing detector to guide the next edits when it repeatedly blocks delivery, and recheck both on any new promising candidate.
-- Preserve a record per candidate, provider and scope. Never average detector readings or paragraph readings to certify the whole essay.
+- Record ZeroGPT's displayed percentage and GPTZero's displayed classification. Use a numeric GPTZero threshold only when the site exposes the necessary probabilities. When Human, AI, and Mixed probabilities are available, use 100 minus Human probability, including Mixed. This is a classification probability and differs from ZeroGPT's text percentage.
+- If a GPTZero result has only a class, confidence wording, or an ambiguous number, record the result and mark the numeric check as unverified. Do not infer a percentage from a label.
+- Once the primary detector is below target, check the exact same complete draft with the other detector. Mark a final pass only when both numeric results are strictly below the threshold. When either score fails, use it to guide further revisions.
+- Keep the actual reported result and distinguish whole-draft scans from paragraph scans. Do not average paragraph results or provider scores.
 
-## Service limits
+## Site limits
 
-- If the full essay is too long or a service rate-limits requests, notify the user that you are splitting the essay into its existing paragraphs for diagnostics. Preserve order, headings and boundaries. For rate limits, queue any diagnostic calls until the service's Retry-After permits requests. Do not flood a throttled service with paragraph requests. If the wait is unavailable or impractical, continue through the other configured detector where authorized and resume the original service when it is available.
-- On confirmed ZeroGPT quota exhaustion, notify the user and automatically switch working measurements to GPTZero if configured. Score the complete current candidate to establish a GPTZero comparison point. If the response only says 429 with no clear cause, report the ambiguity and use the configured fallback for progress. Do not call it confirmed quota exhaustion.
-- If ZeroGPT is still unavailable at handoff, report the candidate as pending ZeroGPT verification unless this exact candidate already has a valid, passing ZeroGPT result. Apply the same rule when GPTZero is unavailable. If there is no usable service, report what is missing and retain the best candidate.
-- Do not retry ambiguous network timeouts automatically because the request may have been billed.
-
-[ZeroGPT Business API](https://api.zerogpt.com/docs) · [GPTZero API quickstart](https://docs.gptzero.me/quickstart/)
+- If ZeroGPT hits its usage limit, switch working checks to GPTZero and verify the exact final candidate in ZeroGPT when available. If either website refuses a long essay, notify the user and use sections only for diagnosis. Final verification requires both complete-draft results.
+- Respect scan limits and any wait requested by the website. If the site blocks measurement, retain the best candidate and identify the missing verification.
+- Website results can differ by account, model version, and what the site makes visible. Follow the site's labels and report missing measurements rather than guessing.
