@@ -6,7 +6,17 @@ A Codex skill for revising academic prose with live writing examples and checkin
 
 ## Install in Codex
 
-Requirements: Git for the commands below, plus browser access to ZeroGPT and GPTZero for scoring. Live academic retrieval also requires browser or web search access.
+### One-command install
+
+With Node.js installed, run this in your terminal:
+
+```sh
+npx skills add aierjin/iteration-humanizer --global --agent codex
+```
+
+Use `$iteration-humanizer` in Codex after installation. The Git commands below are a manual alternative.
+
+Requirements for manual installation: Git, plus browser access to ZeroGPT and GPTZero for scoring. Live academic retrieval also requires browser or web search access.
 
 ### Windows PowerShell
 
