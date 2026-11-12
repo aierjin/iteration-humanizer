@@ -6,7 +6,7 @@ A Codex skill for revising academic prose with live writing examples and checkin
 
 ## Install in Codex
 
-Requirements: Git, PowerShell 7 (`pwsh`), detector API credentials, and network access to the detector endpoints. Live retrieval also requires browser or web search access.
+Requirements: Git for the commands below, plus browser access to ZeroGPT and GPTZero for scoring. Live academic retrieval also requires browser or web search access.
 
 ### Windows PowerShell
 
@@ -23,7 +23,7 @@ mkdir -p ~/.agents/skills
 git clone https://github.com/aierjin/iteration-humanizer.git ~/.agents/skills/iteration-humanizer
 ```
 
-Set `ZEROGPT_API_KEY` and `GPTZERO_API_KEY` in the environment that starts Codex. Obtain credentials from the [ZeroGPT Business API](https://api.zerogpt.com/docs) and [GPTZero API](https://docs.gptzero.me/quickstart/). Keep keys out of prompts and commits. Scoring transmits the selected text to the respective providers and may incur charges. Restart Codex if the skill does not appear.
+Use [ZeroGPT](https://www.zerogpt.com/) and [GPTZero](https://gptzero.me/) in the browser. No API keys are required. The websites may apply sign-in or scan limits. Scoring sends the selected text to the respective website.
 
 ## What it does
 
@@ -39,7 +39,7 @@ Set `ZEROGPT_API_KEY` and `GPTZERO_API_KEY` in the environment that starts Codex
 2. **Find writing examples.** Search for papers whose accessible sections demonstrate the kind of writing the draft needs. Read the actual prose and record the patterns and source links.
 3. **Revise and check the content.** Remove boilerplate, clarify the argument, and adjust sentence rhythm or section order where useful. Check all revised claims, values, units, citations, and conclusions against the original.
 4. **Score and iterate.** Save the full candidate and record the score, detector, and change. After three measured candidates without a new best score on the same detector and scope, search for a different writing approach.
-5. **Verify and report.** Both services must score the exact same complete draft strictly below the target. By default the target is below 10% and the skill pauses after 30 candidate revisions if verification is incomplete. It reports the latest and best readings and asks whether to continue.
+5. **Verify and report.** Both websites must score the exact same complete draft strictly below the target. By default the target is below 10% and the skill pauses after 30 candidate revisions if verification is incomplete. It reports the latest and best readings and asks whether to continue.
 
 ## Writing examples and source priority
 
@@ -64,9 +64,9 @@ If Google Scholar requires supported browser access, the skill asks for it. When
 | [references/academic-retrieval.md](references/academic-retrieval.md) | Search scope, source hierarchy, and example selection |
 | [references/academic-style.md](references/academic-style.md) | Writing guidance and offline examples |
 | [references/detectors.md](references/detectors.md) | Metrics, provider fallback, and final verification |
-| [scripts/score.ps1](scripts/score.ps1) | Sends a single scoring request and returns structured JSON |
 
-Codex manages the search and revision loop within the active session. The PowerShell script measures one file per call.
+
+Codex manages the search and revision loop within the active session and uses the official detector websites. If browser automation is unavailable, you can paste the candidate into each site and return the readings.
 
 ## Quick start
 
@@ -88,10 +88,10 @@ Codex manages the search and revision loop within the active session. The PowerS
 | --- | --- |
 | Content fidelity | Each candidate is checked against the original before it is scored. The writer should review the final draft. |
 | ZeroGPT | Reports `fakePercentage`, its estimate of the share flagged. |
-| GPTZero | Uses 100 × (1 − human class probability), which includes mixed-class probability. |
+| GPTZero | Uses 100 minus Human probability when that number is visible. A class-only result leaves the numeric check unverified. |
 | Dual verification | Scores are reported separately. A reading equal to the threshold does not pass. |
 | Provider quota or limits | If ZeroGPT runs out of quota, GPTZero can continue working measurements when configured. Final verification stays pending until both have scored the same full candidate. Overlong text may be assessed in sections for diagnosis. |
-| Test status | The API client was tested with simulated responses. Live dual-provider operation remains unverified. |
+| Test status | A prior ZeroGPT website session was verified. The updated dual-website workflow has not been tested end to end. |
 
 Before submitting or publishing the final draft, independently check its facts and citations and use an authorized secondary review tool if appropriate. Detector scores do not establish authorship.
 
