@@ -1,9 +1,9 @@
 ---
-name: iteration-study-humanizer
+name: iteration-humanizer
 description: Rewrite a sentence, paragraph, or essay with live academic examples and iterate using ZeroGPT and GPTZero API readings while preserving claims, figures, and citations.
 ---
 
-# Iteration Study Humanizer
+# Iteration Humanizer
 
 Use this workflow to rewrite and retest text. Read [detector rules](references/detectors.md) before the first measurement. Use PowerShell 7 and inherited ZEROGPT_API_KEY and GPTZERO_API_KEY variables. Never collect keys in chat. Text sent for measurement goes to the selected providers and may incur charges.
 
